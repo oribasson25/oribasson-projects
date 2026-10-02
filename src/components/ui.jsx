@@ -88,7 +88,7 @@ export function PageHeader({ eyebrow, title, subtitle, actions, size = 38 }) {
 }
 
 /** Two weights, one shape: `primary` (graphite, at most one per screen) and `ghost`. */
-export function Btn({ variant = 'ghost', icon, children, onClick, title, disabled, danger, style, size = 'md', href, type, download }) {
+export function Btn({ variant = 'ghost', icon, children, onClick, title, disabled, danger, style, size = 'md', href, type, download, sameTab }) {
   const [hot, setHot] = useState(false);
   const pad = size === 'sm' ? '7px 12px' : '10px 17px';
   const font = size === 'sm' ? 12.5 : 13;
@@ -98,7 +98,7 @@ export function Btn({ variant = 'ghost', icon, children, onClick, title, disable
     : { background: hot ? 'var(--bg-hover)' : 'var(--bg-card)', color: danger ? 'var(--danger)' : (hot ? 'var(--text)' : 'var(--text-2)'), border: `1px solid ${hot && !danger ? 'var(--primary-soft)' : 'var(--border)'}` };
   const Tag = href ? 'a' : 'button';
   return (
-    <Tag href={href} target={href && !download ? '_blank' : undefined} rel={href ? 'noopener noreferrer' : undefined}
+    <Tag href={href} target={href && !download && !sameTab ? '_blank' : undefined} rel={href ? 'noopener noreferrer' : undefined}
       download={download} type={href ? undefined : type || 'button'}
       onClick={onClick} title={title} disabled={disabled}
       onMouseEnter={() => !disabled && setHot(true)} onMouseLeave={() => setHot(false)}

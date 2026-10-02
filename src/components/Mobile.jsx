@@ -1,16 +1,17 @@
 import { useEffect } from 'react';
 import { Icons, Eyebrow } from './ui.jsx';
-import { BrandMark, ContactCard, LangToggle, RecentList } from './Sidebar.jsx';
+import { BrandMark, ContactCard, ContactActions, LangSwitch, RecentList } from './Sidebar.jsx';
 
 /* 8Legs' phone shell: a top bar, the screen, and four stops along the bottom. */
 
-export function MobileTopBar({ lang, setLang, go }) {
+export function MobileTopBar({ t, lang, setLang, go, home }) {
   return (
-    <div style={{ height: 52, display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', flexShrink: 0, borderBottom: '1px solid var(--border)', background: 'var(--bg-sidebar)' }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
+    <div style={{ height: 56, display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', flexShrink: 0, borderBottom: '1px solid var(--border)', background: 'var(--bg-sidebar)' }}>
+      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
         <BrandMark lang={lang} mark={30} text={17} onClick={() => go('/')} />
       </div>
-      <LangToggle lang={lang} setLang={setLang} />
+      {home && <ContactActions t={t} compact />}
+      <LangSwitch lang={lang} setLang={setLang} />
     </div>
   );
 }

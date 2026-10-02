@@ -6,7 +6,7 @@ import { usePath, useIsMobile } from './lib/hooks.js';
 import { savedLang, saveLang, loadChats, clearChats } from './lib/store.js';
 import { useChat } from './lib/useChat.js';
 import { Crumbs } from './components/ui.jsx';
-import { Sidebar, LangToggle } from './components/Sidebar.jsx';
+import { Sidebar, LangToggle, ContactActions } from './components/Sidebar.jsx';
 import { HomeChat } from './components/HomeChat.jsx';
 import { ResumeView } from './components/ResumeView.jsx';
 import { ProjectsView } from './components/ProjectsView.jsx';
@@ -109,7 +109,7 @@ export default function App() {
     const title = page === 'chat' ? null : (t.nav[page] || '');
     return (
       <div className="m-root m-app" style={{ display: 'flex', flexDirection: 'column', background: 'var(--bg-app)', overflow: 'hidden' }}>
-        <MobileTopBar lang={lang} setLang={setLang} go={go} />
+        <MobileTopBar t={t} lang={lang} setLang={setLang} go={go} home={page === 'chat'} />
         {page === 'chat' ? (
           <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>{home(true)}</div>
         ) : (
@@ -134,7 +134,12 @@ export default function App() {
         onPickRecent={pickRecent} onNewChat={newChat} onClearHistory={clearHistory}
         admin={admin} onSignOut={signOut} />
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', background: 'var(--bg-app)' }}>
-        <Crumbs trail={[section, t.nav[page]]} right={<LangToggle lang={lang} setLang={setLang} />} />
+        <Crumbs trail={[section, t.nav[page]]} right={(
+          <>
+            {page === 'chat' && <ContactActions t={t} />}
+            <LangToggle lang={lang} setLang={setLang} />
+          </>
+        )} />
         {page === 'chat' ? home(false) : (
           <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
             <PetWatermark size={560} style={{ bottom: -70, right: -40 }} />

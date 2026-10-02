@@ -1,6 +1,6 @@
 import profile from '../../content/profile.js';
 import { tx } from '../../shared/text.js';
-import { Icons, Eyebrow, SegTabs } from './ui.jsx';
+import { Icons, Eyebrow, SegTabs, Btn } from './ui.jsx';
 import { Pet } from './Pet.jsx';
 import { chatTitle } from '../lib/store.js';
 
@@ -86,6 +86,65 @@ export function ContactCard({ t }) {
           }}>{Icons.download}{t.downloadCv}</a>
       )}
     </div>
+  );
+}
+
+const telHref = (v) => `tel:${v.replace(/[^\d+]/g, '')}`;
+
+/**
+ * How to reach Ori, at the top right of the home screen where a recruiter
+ * looks first. Desktop gets labelled buttons with the number written out;
+ * a phone gets three solid round icons that fit beside the logo.
+ */
+export function ContactActions({ t, compact }) {
+  const c = profile.contact || {};
+  const items = [
+    c.email && { key: 'email', href: `mailto:${c.email}`, icon: Icons.mail, label: t.contactEmail, title: c.email },
+    c.phone && { key: 'phone', href: telHref(c.phone), icon: Icons.phone, label: c.phone, title: c.phone },
+    c.linkedin && { key: 'linkedin', href: c.linkedin, icon: Icons.linkedin, label: 'LinkedIn', title: 'LinkedIn', external: true },
+  ].filter(Boolean);
+  if (!items.length) return null;
+
+  if (compact) {
+    return (
+      <div style={{ display: 'flex', gap: 6 }}>
+        {items.map((it) => (
+          <a key={it.key} href={it.href} title={it.title} aria-label={it.title}
+            target={it.external ? '_blank' : undefined} rel={it.external ? 'noopener noreferrer' : undefined}
+            style={{
+              width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
+              background: 'var(--primary)', color: 'var(--primary-ink)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 2px 10px var(--primary-glow)',
+            }}>{it.icon}</a>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      {items.map((it, i) => (
+        <Btn key={it.key} size="sm" variant={i === 0 ? 'primary' : 'ghost'} icon={it.icon} href={it.href} title={it.title}
+          sameTab={!it.external}
+          style={it.key === 'phone' ? { direction: 'ltr' } : undefined}>
+          {it.label}
+        </Btn>
+      ))}
+    </div>
+  );
+}
+
+/** One button that flips the language — the phone top bar has no room for two. */
+export function LangSwitch({ lang, setLang }) {
+  const other = lang === 'he' ? 'en' : 'he';
+  return (
+    <button type="button" onClick={() => setLang(other)} title={other === 'he' ? 'עברית' : 'English'}
+      style={{
+        height: 34, minWidth: 40, padding: '0 10px', borderRadius: 10, flexShrink: 0,
+        background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-2)',
+        fontSize: 12.5, fontWeight: 700,
+      }}>{other === 'he' ? 'עב' : 'EN'}</button>
   );
 }
 
