@@ -68,7 +68,8 @@ export function ProjectsView({ t, lang, onAsk, onOpenChat, stacked }) {
             action={<Btn icon={Icons.chat} onClick={onOpenChat}>{t.openChat}</Btn>} />
         </Section>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+        // Cards keep their own height; one long card would otherwise stretch its whole row.
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16, alignItems: 'start' }}>
           {list.map((p, i) => <ProjectCard key={p.id || i} p={p} t={t} lang={lang} onAsk={onAsk} />)}
         </div>
       )}
