@@ -138,9 +138,14 @@ a { color: inherit; }
 /* ── phones ── */
 @media (max-width: 768px) {
   :root { --ui-zoom: 1; }
-  .m-app { height: 100vh; height: 100dvh; }
+  /* An open keyboard does not shrink 100dvh on iOS, so the shell is sized to
+     the visual viewport, which useViewportHeight keeps in --app-h. */
+  .m-app { height: 100vh; height: 100dvh; height: var(--app-h, 100dvh); }
   .m-nav, .m-sheet { padding-bottom: env(safe-area-inset-bottom); }
-  .m-root input, .m-root textarea, .m-root select { font-size: 16px; }
+  /* iOS zooms the whole page into any field under 16px, and leaves it zoomed:
+     the layout ends up cut off on the right. !important beats the inline
+     sizes the components set for desktop. */
+  .m-root input, .m-root textarea, .m-root select { font-size: 16px !important; }
   .m-root button { -webkit-tap-highlight-color: transparent; }
 }
 

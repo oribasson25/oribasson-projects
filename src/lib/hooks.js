@@ -42,3 +42,50 @@ export function useReducedMotion() {
   }, []);
   return reduced;
 }
+
+/*
+ * The phone's real height. With the keyboard open, iOS keeps 100dvh at the
+ * full screen and scrolls the page to show the field instead — the top bar
+ * slides away and the shell looks stretched. visualViewport is the only
+ * number that tells the truth, so it goes into --app-h and the page is put
+ * back at the top whenever Safari scrolls it.
+ */
+export function useViewportHeight(active) {
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const root = document.documentElement;
+    if (!active || !vv) return undefined;
+    const apply = () => {
+      root.style.setProperty('--app-h', `${Math.round(vv.height)}px`);
+      if (window.scrollY !== 0) window.scrollTo(0, 0);
+    };
+    apply();
+    vv.addEventListener('resize', apply);
+    vv.addEventListener('scroll', apply);
+    return () => {
+      vv.removeEventListener('resize', apply);
+      vv.removeEventListener('scroll', apply);
+      root.style.removeProperty('--app-h');
+    };
+  }, [active]);
+}
+
+/** True while a text field has focus — on a phone, while the keyboard is up. */
+export function useTyping(active) {
+  const [typing, setTyping] = useState(false);
+  useEffect(() => {
+    if (!active) { setTyping(false); return undefined; }
+    const isField = (el) => !!el && (el.tagName === 'TEXTAREA'
+      || (el.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'submit'].includes(el.type)));
+    const onIn = (e) => { if (isField(e.target)) setTyping(true); };
+    // Focus may be moving to another field; look once it has landed.
+    const onOut = () => setTimeout(() => setTyping(isField(document.activeElement)), 60);
+    document.addEventListener('focusin', onIn);
+    document.addEventListener('focusout', onOut);
+    return () => {
+      document.removeEventListener('focusin', onIn);
+      document.removeEventListener('focusout', onOut);
+    };
+  }, [active]);
+  return typing;
+}

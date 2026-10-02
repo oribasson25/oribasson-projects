@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import profile from '../content/profile.js';
 import { tx } from '../shared/text.js';
 import { strings } from './i18n.js';
-import { usePath, useIsMobile } from './lib/hooks.js';
+import { usePath, useIsMobile, useViewportHeight, useTyping } from './lib/hooks.js';
 import { savedLang, saveLang, loadChats, clearChats } from './lib/store.js';
 import { useChat } from './lib/useChat.js';
 import { Crumbs } from './components/ui.jsx';
@@ -31,6 +31,8 @@ export default function App() {
   const t = strings(lang);
   const [path, go] = usePath();
   const mobile = useIsMobile();
+  useViewportHeight(mobile);
+  const typing = useTyping(mobile);
   const [admin, setAdmin] = useState(null);           // null until the server has answered
   const [status, setStatus] = useState({ chat: 'unknown', model: null });
   const [recents, setRecents] = useState(loadChats);
@@ -118,7 +120,8 @@ export default function App() {
             {view(true)}
           </div>
         )}
-        <MobileBottomNav t={t} page={page} go={go} onMore={() => setMoreOpen(true)} moreOpen={moreOpen} />
+        {/* While the keyboard is up the bottom bar would only take room from the conversation. */}
+        {!typing && <MobileBottomNav t={t} page={page} go={go} onMore={() => setMoreOpen(true)} moreOpen={moreOpen} />}
         <MobileMore t={t} open={moreOpen} onClose={() => setMoreOpen(false)} recents={recents}
           activeChatId={chat.messages.length ? chat.chatId : null} onPickRecent={pickRecent}
           onNewChat={newChat} onClearHistory={clearHistory} admin={admin} go={go} onSignOut={signOut} />
