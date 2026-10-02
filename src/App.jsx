@@ -14,7 +14,7 @@ import { AdminLogin } from './components/AdminLogin.jsx';
 import { AdminSettings } from './components/AdminSettings.jsx';
 import { AdminConversations } from './components/AdminConversations.jsx';
 import { PetWatermark } from './components/Pet.jsx';
-import { MobileTopBar, MobileBottomNav, MobileMore } from './components/Mobile.jsx';
+import { MobileTopBar, MobileBottomNav, MobileMore, NAV_SPACE } from './components/Mobile.jsx';
 
 const PAGES = {
   '/': 'chat',
@@ -111,13 +111,15 @@ export default function App() {
 
   if (mobile) {
     const title = page === 'chat' ? null : (t.nav[page] || '');
+    // Room under the content for the floating bar — none while it is hidden for the keyboard.
+    const navSpace = typing ? '0px' : NAV_SPACE;
     return (
-      <div className="m-root m-app" style={{ display: 'flex', flexDirection: 'column', background: 'var(--bg-app)', overflow: 'hidden' }}>
+      <div className="m-root m-app" style={{ position: 'relative', display: 'flex', flexDirection: 'column', background: 'var(--bg-app)', overflow: 'hidden' }}>
         <MobileTopBar t={t} lang={lang} setLang={setLang} go={go} home={page === 'chat'} />
         {page === 'chat' ? (
-          <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>{home(true)}</div>
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', paddingBottom: navSpace }}>{home(true)}</div>
         ) : (
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '18px 14px 28px' }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: `18px 14px calc(28px + ${navSpace})` }}>
             {title && <div dir="auto" style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 14 }}>{title}</div>}
             {view(true)}
           </div>
