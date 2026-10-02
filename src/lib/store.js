@@ -42,10 +42,10 @@ export function visitorId() {
   return visitor;
 }
 
+/** English unless this visitor has switched to Hebrew themselves — never from the browser's language. */
 export function savedLang() {
   const v = read(LANG, null);
-  if (v === 'he' || v === 'en') return v;
-  return (navigator.language || '').toLowerCase().startsWith('he') ? 'he' : 'en';
+  return v === 'he' ? 'he' : 'en';
 }
 export function saveLang(lang) { write(LANG, lang); }
 
