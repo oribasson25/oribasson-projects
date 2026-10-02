@@ -42,6 +42,35 @@ export default [
     links: { live: 'https://www.8legs.world' },
   },
   {
+    id: 'hr-recruitment',
+    name: { en: 'HR Recruitment System with AI CV Matching', he: 'מערכת גיוס עם התאמת קורות חיים ב-AI' },
+    tagline: {
+      en: 'AI matching of resumes to open jobs · The whole hiring pipeline',
+      he: 'התאמת קורות חיים למשרות ב-AI · ניהול תהליך הגיוס כולו',
+    },
+    year: '2026',
+    role: { en: 'Design & full-stack development · Libra Insurance', he: 'עיצוב ופיתוח full-stack · ליברה ביטוח' },
+    description: {
+      en: 'An internal recruitment system for the HR team, built around AI matching: HR uploads a batch of resumes, and each one is scored against every open job with a short explanation of the score — so the strongest candidates for each role surface first. Around it runs the whole hiring process: jobs, candidates, a drag-and-drop Kanban board, recruitment stages, a resume library, reminders and Excel export.',
+      he: 'מערכת גיוס פנימית לצוות משאבי האנוש, שבנויה סביב התאמה ב-AI: מעלים כמה קורות חיים בבת אחת, וכל אחד מקבל ציון התאמה מול כל משרה פתוחה, עם הסבר קצר לציון — כך שהמועמדים החזקים לכל תפקיד עולים ראשונים. סביב זה מנוהל כל תהליך הגיוס: משרות, מועמדים, לוח Kanban עם גרירה, שלבי גיוס, מאגר קורות חיים, תזכורות וייצוא לאקסל.',
+    },
+    highlights: {
+      en: [
+        { title: 'AI CV matching', text: 'Every uploaded resume is scored against every open job, with a one-line explanation of the score. Results are color-coded by fit and kept in a match history.' },
+        { title: 'Reads real resumes', text: 'Text is extracted straight from PDF and Word files, in Hebrew and English, many files at once.' },
+        { title: 'Recruitment pipeline', text: 'Stages from CV received through interview and offer to hired, rejected, ghosted or withdrew, on a drag-and-drop Kanban board.' },
+        { title: 'Everyday HR work', text: 'Candidate notes, interview summaries and ratings, reminders, and a full Excel export.' },
+      ],
+      he: [
+        { title: 'התאמת קו״ח ב-AI', text: 'כל קובץ קורות חיים שמועלה מקבל ציון מול כל משרה פתוחה, עם משפט שמסביר את הציון. התוצאות צבועות לפי רמת ההתאמה ונשמרות בהיסטוריה.' },
+        { title: 'קריאת קורות חיים אמיתיים', text: 'חילוץ טקסט ישירות מקובצי PDF ו-Word, בעברית ובאנגלית, הרבה קבצים בבת אחת.' },
+        { title: 'תהליך הגיוס', text: 'שלבים מקבלת קו״ח, דרך ראיון והצעה, ועד גיוס, דחייה, היעלמות או חזרה מהמועמדות — על לוח Kanban עם גרירה.' },
+        { title: 'העבודה היומיומית', text: 'הערות על מועמדים, סיכומי ראיונות ודירוג, תזכורות וייצוא מלא לאקסל.' },
+      ],
+    },
+    tech: ['Next.js', 'TypeScript', 'Prisma', 'Neon PostgreSQL', 'Vercel Blob', 'Tailwind CSS'],
+  },
+  {
     id: 'claims-voice-agent',
     name: { en: 'Unified Hebrew Voice & Status Agent for Claims', he: 'סוכן קולי מאוחד בעברית לתביעות ולבירור סטטוס' },
     tagline: { en: 'Inbound voice · Full CRM integration', he: 'שיחות נכנסות · אינטגרציה מלאה ל-CRM' },
