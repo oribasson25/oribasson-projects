@@ -63,11 +63,13 @@ export default function App() {
   useEffect(() => { if (path === '/admin' && admin) go('/admin/settings'); }, [path, admin]);
   useEffect(() => { setMoreOpen(false); }, [path]);
 
-  const name = tx(profile.name, lang);
+  // The browser tab always reads in English, whatever the interface language.
   useEffect(() => {
-    const label = page === 'chat' ? null : page === 'login' ? t.adminSignIn : (t.nav[page] || null);
+    const en = strings('en');
+    const name = tx(profile.name, 'en');
+    const label = page === 'chat' ? null : page === 'login' ? en.adminSignIn : (en.nav[page] || null);
     document.title = label ? `${label} · ${name}` : name;
-  }, [page, lang]);
+  }, [page]);
 
   function ask(text) {
     go('/');
