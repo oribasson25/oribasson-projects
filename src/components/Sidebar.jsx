@@ -16,11 +16,13 @@ export function BrandMark({ lang, mark = 34, text = 19, onClick }) {
       }}>
         <Pet crop="head" size={mark - 4} />
       </div>
-      {/* The space sits between the two spans, not inside one: a Hebrew span
-          is its own bidi island and drops a leading space at its edge. */}
-      <div dir={lang === 'he' ? 'rtl' : 'ltr'} style={{ fontSize: text, fontWeight: 800, letterSpacing: '-0.03em', whiteSpace: 'nowrap' }}>
-        <span style={{ color: 'var(--text)' }}>{first}</span>
-        {rest.length > 0 && <>{' '}<span style={{ color: 'var(--text-muted)' }}>{rest.join(' ')}</span></>}
+      {/* The global Hebrew rule makes every span its own bidi island, which
+          leaves this line with no strong letter of its own: it falls back to
+          left-to-right and reads "בסון אורי". The line takes the language's
+          direction and the two parts stay in it. */}
+      <div dir={lang === 'he' ? 'rtl' : 'ltr'} style={{ fontSize: text, fontWeight: 800, letterSpacing: '-0.03em', whiteSpace: 'nowrap', unicodeBidi: 'isolate' }}>
+        <span style={{ color: 'var(--text)', unicodeBidi: 'normal' }}>{first}</span>
+        {rest.length > 0 && <>{' '}<span style={{ color: 'var(--text-muted)', unicodeBidi: 'normal' }}>{rest.join(' ')}</span></>}
       </div>
     </button>
   );
