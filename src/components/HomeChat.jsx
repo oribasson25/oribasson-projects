@@ -61,23 +61,24 @@ export function Composer({ value, onChange, onSend, disabled, placeholder, dir, 
   );
 }
 
-/* On a phone the questions sit in one row you swipe through — wrapped, six
-   of them filled half the screen. */
-function QuestionChips({ items, onPick, disabled, dir, style, row, bleed = 0 }) {
+/* On a phone every question stays in view, as a two-column grid of small
+   cards: six pills wrapped one per line filled half the screen. */
+function QuestionChips({ items, onPick, disabled, dir, style, grid }) {
   return (
-    <div dir={dir} className={row ? 'chip-row' : undefined} style={{
-      display: 'flex', gap: 8,
-      ...(row
-        ? { flexWrap: 'nowrap', overflowX: 'auto', justifyContent: 'flex-start', marginInline: -bleed, paddingInline: bleed, paddingBlock: 2 }
-        : { flexWrap: 'wrap', justifyContent: 'center' }),
+    <div dir={dir} style={{
+      ...(grid
+        ? { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }
+        : { display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }),
       ...style,
     }}>
       {items.map((text) => (
         <button key={text} type="button" onClick={() => onPick(text)} disabled={disabled}
           style={{
             background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-2)',
-            borderRadius: 999, padding: '8px 15px', fontSize: 12.5, fontWeight: 600,
-            flexShrink: 0, whiteSpace: row ? 'nowrap' : undefined,
+            fontWeight: 600,
+            ...(grid
+              ? { borderRadius: 14, padding: '9px 12px', fontSize: 12.5, lineHeight: 1.35, minHeight: 50, textAlign: 'start', display: 'flex', alignItems: 'center' }
+              : { borderRadius: 999, padding: '8px 15px', fontSize: 12.5 }),
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.color = 'var(--text)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-2)'; }}
@@ -182,9 +183,8 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
             placeholder={stacked ? t.placeholderShort : t.placeholder} />
         </div>
 
-        <QuestionChips items={chips} onPick={submit} disabled={pending || offline} dir={dir}
-          row={stacked} bleed={stacked ? 18 : 0}
-          style={{ marginTop: stacked ? 14 : 18, width: stacked ? 'calc(100% + 36px)' : 'min(760px, 100%)' }} />
+        <QuestionChips items={chips} onPick={submit} disabled={pending || offline} dir={dir} grid={stacked}
+          style={{ marginTop: stacked ? 14 : 18, width: stacked ? '100%' : 'min(760px, 100%)' }} />
 
         {!stacked && (
           <div dir={dir} style={{ marginTop: 26, fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center' }}>{t.foot(first)}</div>
@@ -272,8 +272,7 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
           )}
 
           {!pending && !error && last && last.role === 'assistant' && followUps.length > 0 && (
-            <QuestionChips items={followUps} onPick={submit} disabled={offline} dir={dir}
-              row={stacked} bleed={stacked ? 16 : 0}
+            <QuestionChips items={followUps} onPick={submit} disabled={offline} dir={dir} grid={stacked}
               style={{ justifyContent: 'flex-start', marginTop: 2 }} />
           )}
         </div>

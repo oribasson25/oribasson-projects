@@ -73,10 +73,6 @@ body {
 
 .fade-in { animation: fadeIn 0.25s ease both; }
 
-/* A row of chips you swipe; the scrollbar would only add noise. */
-.chip-row { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.chip-row::-webkit-scrollbar { display: none; }
-
 .pet-halo { animation: haloBreathe 4.2s ease-in-out infinite; }
 .pet-halo.busy { animation-duration: 1.4s; }
 
