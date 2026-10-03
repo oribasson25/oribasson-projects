@@ -38,12 +38,34 @@ export default {
   cvPdf: '',
 
   // A short recorded hello, offered once to each new visitor in a bubble next
-  // to Ori (browsers do not allow sound before the first tap). Put the file in
-  // /public — mp3 or m4a — and set its path; empty hides the whole feature.
-  // `transcript` is what you say, shown as captions while it plays.
+  // to Ori (browsers do not allow sound before the first tap). The files live
+  // in /public; an empty `audio` hides the whole feature.
+  // `transcript` is shown as captions while it plays: timed cues
+  // [{ at: seconds, text }] as below, or plain text timed by sentence length.
   intro: {
-    audio: '',        // e.g. '/intro.mp3', or { en: '/intro-en.mp3', he: '/intro-he.mp3' }
-    transcript: '',   // e.g. 'Hi, I\'m Ori. I build production AI agents…' — or { en, he }
+    audio: { en: '/intro-en.mp3', he: '/intro-he.mp3' },
+    transcript: {
+      en: [
+        { at: 0, text: 'Hi, my name is Ori Basson.' },
+        { at: 2.84, text: 'Thanks for stopping by my profile.' },
+        { at: 5.16, text: 'If you\'re looking for a creative, hard-working' },
+        { at: 7.6, text: 'and results-driven individual to join your team,' },
+        { at: 10.44, text: 'you\'ve come to the right place.' },
+        { at: 12.34, text: 'I\'d love for you to take a look at my resume' },
+        { at: 14.28, text: 'and featured projects to see what I can bring to the table.' },
+        { at: 17.48, text: 'Feel free to reach out — I\'d love to connect.' },
+      ],
+      he: [
+        { at: 0, text: 'היי, קוראים לי אורי בסון.' },
+        { at: 1.9, text: 'תודה שקפצתם לבקר בפרופיל שלי.' },
+        { at: 4.04, text: 'אם אתם מחפשים אדם יצירתי, חרוץ ומוכוון תוצאות' },
+        { at: 7.26, text: 'להצטרפות לצוות שלכם,' },
+        { at: 8.9, text: 'הגעתם למקום הנכון.' },
+        { at: 10.34, text: 'אשמח שתציצו בקורות החיים שלי ובפרויקטים הבולטים שלי' },
+        { at: 13.58, text: 'כדי לראות מה אני מביא למקום עבודה שאני מגיע אליו.' },
+        { at: 16.58, text: 'מוזמנים ליצור איתי קשר.' },
+      ],
+    },
   },
 
   // Anything else the chatbot should know that does not fit the resume:

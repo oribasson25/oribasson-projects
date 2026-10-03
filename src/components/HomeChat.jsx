@@ -125,6 +125,11 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
   const chips = (questions[lang] || questions.en || []);
   const intro = profile.intro || {};
   const voice = useIntroVoice(tx(intro.audio, lang));
+  // Timed cues are an array, so they are picked by language here rather than by tx().
+  const introText = Array.isArray(intro.transcript) ? intro.transcript
+    : intro.transcript && typeof intro.transcript === 'object'
+      ? (intro.transcript[lang] || intro.transcript.en || intro.transcript.he || '')
+      : intro.transcript || '';
 
   // Something elsewhere on the site asked a question ("Ask about this project").
   useEffect(() => {
@@ -174,11 +179,11 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
         padding: stacked ? '8px 18px 18px' : '0 34px 50px', overflowY: 'auto',
       }}>
         <PetStage size={stacked ? 148 : 230} mode={pending ? 'working' : 'idle'} pulse={chat.pulse} busy={pending} voice={voice}>
-          {!stacked && <IntroBubble t={t} voice={voice} transcript={tx(intro.transcript, lang)} />}
+          {!stacked && <IntroBubble t={t} voice={voice} transcript={introText} />}
           {stacked && voice.heard && voice.state !== 'playing' && <IntroBubble t={t} voice={voice} stacked />}
         </PetStage>
         {stacked && !(voice.heard && voice.state !== 'playing') && (
-          <IntroBubble t={t} voice={voice} transcript={tx(intro.transcript, lang)} stacked />
+          <IntroBubble t={t} voice={voice} transcript={introText} stacked />
         )}
         <div dir={dir} style={{
           fontSize: stacked ? 25 : 30, fontWeight: 800, letterSpacing: '-0.035em',

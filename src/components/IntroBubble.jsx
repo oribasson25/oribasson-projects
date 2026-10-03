@@ -12,16 +12,27 @@ const fmt = (sec) => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
 
-/** A plain transcript becomes timed captions, one sentence at a time, by length. */
-function cues(transcript) {
+/**
+ * The line being said at `time` seconds. A transcript is either timed cues —
+ * [{ at: seconds, text }], exact — or plain text, split into sentences and
+ * timed by their length across the recording.
+ */
+function captionAt(transcript, time, duration) {
+  if (Array.isArray(transcript)) {
+    let line = null;
+    for (const cue of transcript) if (cue.at <= time) line = cue.text;
+    return line;
+  }
   const sentences = String(transcript || '').trim().split(/(?<=[.!?…])\s+/).filter(Boolean);
-  const total = sentences.reduce((n, x) => n + x.length, 0) || 1;
+  if (!sentences.length || !duration) return null;
+  const total = sentences.reduce((n, x) => n + x.length, 0);
+  const progress = time / duration;
   let at = 0;
-  return sentences.map((text) => {
-    const from = at / total;
+  for (const text of sentences) {
     at += text.length;
-    return { text, from, to: at / total };
-  });
+    if (progress < at / total) return text;
+  }
+  return sentences[sentences.length - 1];
 }
 
 const speakerIcon = (
@@ -72,7 +83,7 @@ export function IntroBubble({ t, voice, transcript, stacked }) {
 
   const a = audioRef.current;
   const progress = a && duration ? Math.min(1, a.currentTime / duration) : 0;
-  const caption = playing ? (cues(transcript).find((c) => progress >= c.from && progress < c.to) || {}).text : null;
+  const caption = playing && a ? captionAt(transcript, a.currentTime, duration) : null;
   const level = playing ? levelRef.current : 0;
   const place = stacked
     ? { position: 'relative', margin: '2px auto 0', maxWidth: 'min(300px, 100%)' }
