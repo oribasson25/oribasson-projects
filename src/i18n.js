@@ -26,6 +26,10 @@ const STRINGS = {
       ? 'Ask me anything about my experience, skills and projects.'
       : `Ask my AI assistant anything about my experience, skills and projects — it answers from my resume.`,
     helloSubShort: (firstPerson) => (firstPerson ? 'Ask me anything about my work.' : 'Ask my AI assistant anything about my work.'),
+    introOffer: 'Hear me say hi',
+    introStop: 'Stop',
+    introReplay: 'Play my hello again',
+    introDismiss: 'Not now',
     placeholder: 'Ask about experience, skills, projects…',
     placeholderShort: 'Ask anything…',
     answer: 'Ask a follow-up…',
@@ -154,6 +158,10 @@ const STRINGS = {
       ? 'אפשר לשאול כל דבר על הניסיון, הכישורים והפרויקטים שלי.'
       : 'שאלו את ה-AI שלי כל דבר על הניסיון, הכישורים והפרויקטים שלי — התשובות מבוססות על קורות החיים.',
     helloSubShort: (firstPerson) => (firstPerson ? 'אפשר לשאול אותי כל דבר על העבודה שלי.' : 'שאלו את ה-AI שלי כל דבר על העבודה שלי.'),
+    introOffer: 'שמעו ממני כמה מילים',
+    introStop: 'עצירה',
+    introReplay: 'השמעה חוזרת',
+    introDismiss: 'לא עכשיו',
     placeholder: 'שאלו על ניסיון, כישורים, פרויקטים…',
     placeholderShort: 'שאלו כל דבר…',
     answer: 'שאלת המשך…',

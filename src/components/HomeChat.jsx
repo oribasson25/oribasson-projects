@@ -4,6 +4,8 @@ import questions from '../../content/questions.js';
 import { tx } from '../../shared/text.js';
 import { renderMarkdown } from '../lib/markdown.js';
 import { Pet, PetStage } from './Pet.jsx';
+import { IntroBubble } from './IntroBubble.jsx';
+import { useIntroVoice } from '../lib/useIntroVoice.js';
 
 function firstName(lang) {
   return tx(profile.name, lang).split(' ')[0] || 'Ori';
@@ -121,6 +123,8 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
   const { messages, pending, streamingId, error } = chat;
   const started = messages.length > 0;
   const chips = (questions[lang] || questions.en || []);
+  const intro = profile.intro || {};
+  const voice = useIntroVoice(tx(intro.audio, lang));
 
   // Something elsewhere on the site asked a question ("Ask about this project").
   useEffect(() => {
@@ -129,6 +133,9 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
       onSeedUsed();
     }
   }, [seed && seed.n]);
+
+  // The hello belongs to the welcome screen; asking a question ends it.
+  useEffect(() => { if (started && voice.state === 'playing') voice.stop(); }, [started]);
 
   // Wave hello the first time the welcome screen shows.
   const waved = useRef(false);
@@ -166,7 +173,13 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
         alignItems: 'center', justifyContent: 'center',
         padding: stacked ? '8px 18px 18px' : '0 34px 50px', overflowY: 'auto',
       }}>
-        <PetStage size={stacked ? 148 : 230} mode={pending ? 'working' : 'idle'} pulse={chat.pulse} busy={pending} />
+        <PetStage size={stacked ? 148 : 230} mode={pending ? 'working' : 'idle'} pulse={chat.pulse} busy={pending} voice={voice}>
+          {!stacked && <IntroBubble t={t} voice={voice} transcript={tx(intro.transcript, lang)} />}
+          {stacked && voice.heard && voice.state !== 'playing' && <IntroBubble t={t} voice={voice} stacked />}
+        </PetStage>
+        {stacked && !(voice.heard && voice.state !== 'playing') && (
+          <IntroBubble t={t} voice={voice} transcript={tx(intro.transcript, lang)} stacked />
+        )}
         <div dir={dir} style={{
           fontSize: stacked ? 25 : 30, fontWeight: 800, letterSpacing: '-0.035em',
           textAlign: 'center', marginTop: 6,

@@ -37,6 +37,15 @@ export default {
   // A PDF of your resume, placed in /public (e.g. '/cv.pdf'). Empty hides the button.
   cvPdf: '',
 
+  // A short recorded hello, offered once to each new visitor in a bubble next
+  // to Ori (browsers do not allow sound before the first tap). Put the file in
+  // /public — mp3 or m4a — and set its path; empty hides the whole feature.
+  // `transcript` is what you say, shown as captions while it plays.
+  intro: {
+    audio: '',        // e.g. '/intro.mp3', or { en: '/intro-en.mp3', he: '/intro-he.mp3' }
+    transcript: '',   // e.g. 'Hi, I\'m Ori. I build production AI agents…' — or { en, he }
+  },
+
   // Anything else the chatbot should know that does not fit the resume:
   // what you are looking for, availability, notice period, salary range you
   // are comfortable sharing, work style, hobbies… Plain text, any length.
