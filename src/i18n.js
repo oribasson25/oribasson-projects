@@ -36,7 +36,7 @@ const STRINGS = {
     foot: (first) => `Answers are written by AI from ${first}'s resume. Conversations are saved and shown to ${first}.`,
     threadTitle: (first) => `Chat with ${first}`,
     poweredBy: (model) => (model ? `AI · ${model}` : 'AI assistant'),
-    thinking: 'Writing an answer…',
+    steps: (first) => ['Reading your question', `Going through ${first}'s resume and projects`, 'Writing the answer'],
     unavailable: 'The chat is offline right now — the resume and projects are still here.',
     errors: {
       rate_limited: "That's a lot of questions! Please wait a few minutes and try again.",
@@ -168,7 +168,7 @@ const STRINGS = {
     foot: (first) => `התשובות נכתבות ב-AI מתוך קורות החיים. השיחות נשמרות ומוצגות ל${first}.`,
     threadTitle: (first) => `שיחה עם ${first}`,
     poweredBy: (model) => (model ? `AI · ${model}` : 'עוזר AI'),
-    thinking: 'התשובה בדרך…',
+    steps: (first) => ['קריאת השאלה', `מעבר על קורות החיים והפרויקטים של ${first}`, 'כתיבת התשובה'],
     unavailable: 'הצ׳אט לא זמין כרגע — קורות החיים והפרויקטים עדיין כאן.',
     errors: {
       rate_limited: 'הרבה שאלות! נסו שוב בעוד כמה דקות.',

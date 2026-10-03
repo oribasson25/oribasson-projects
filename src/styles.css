@@ -64,10 +64,6 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes pulseDot {
-  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-  40% { opacity: 1; transform: scale(1); }
-}
 @keyframes haloBreathe { 0%, 100% { transform: scale(0.94); opacity: 0.75; } 50% { transform: scale(1.06); opacity: 1; } }
 @keyframes caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
@@ -75,16 +71,6 @@ body {
 
 .pet-halo { animation: haloBreathe 4.2s ease-in-out infinite; }
 .pet-halo.busy { animation-duration: 1.4s; }
-
-.typing-dot {
-  display: inline-block;
-  width: 7px; height: 7px;
-  background: var(--text-2);
-  border-radius: 50%;
-  animation: pulseDot 1.2s infinite ease-in-out;
-}
-.typing-dot:nth-child(2) { animation-delay: 0.15s; }
-.typing-dot:nth-child(3) { animation-delay: 0.3s; }
 
 input, textarea, select {
   background: var(--bg-input);
@@ -134,6 +120,26 @@ a { color: inherit; }
 .md a:hover { text-decoration-color: var(--text); }
 .md code { font-family: var(--mono); font-size: 0.88em; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; padding: 1px 5px; }
 .md .caret { display: inline-block; width: 7px; height: 1em; background: var(--text); vertical-align: -0.15em; margin-inline-start: 2px; border-radius: 1px; animation: caret 1s steps(1) infinite; }
+
+/* An answer being written (Answer.jsx sets the delays): each new paragraph or
+   bullet rises in, each new word fades in from a blur. */
+@keyframes blockIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes wordIn { from { opacity: 0; filter: blur(3px); } to { opacity: 1; filter: blur(0); } }
+.md .rv-b { animation: blockIn 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.md .rv-w { animation: wordIn 0.52s ease-out both; }
+/* …and stays part of its sentence: in Hebrew every span is otherwise its own
+   direction island, and a paragraph of fresh words would read left to right. */
+[data-ui-lang] .md .rv-w { unicode-bidi: normal; }
+
+/* The step Ori is on while the answer is prepared. */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { display: block; animation: spin 0.8s linear infinite; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.shimmer {
+  background: linear-gradient(90deg, var(--text-muted) 35%, var(--text) 50%, var(--text-muted) 65%) 0 0 / 200% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shimmer 1.6s linear infinite;
+}
 
 /* ── phones ── */
 @media (max-width: 768px) {

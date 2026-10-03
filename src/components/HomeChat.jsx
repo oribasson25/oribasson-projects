@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import profile from '../../content/profile.js';
 import questions from '../../content/questions.js';
 import { tx } from '../../shared/text.js';
-import { renderMarkdown } from '../lib/markdown.js';
 import { Pet, PetStage } from './Pet.jsx';
 import { IntroBubble } from './IntroBubble.jsx';
+import { Answer, Steps } from './Answer.jsx';
 import { useIntroVoice } from '../lib/useIntroVoice.js';
 
 function firstName(lang) {
@@ -65,9 +65,9 @@ export function Composer({ value, onChange, onSend, disabled, placeholder, dir, 
 
 /* On a phone every question stays in view, as a two-column grid of small
    cards: six pills wrapped one per line filled half the screen. */
-function QuestionChips({ items, onPick, disabled, dir, style, grid }) {
+function QuestionChips({ items, onPick, disabled, dir, style, grid, className }) {
   return (
-    <div dir={dir} style={{
+    <div dir={dir} className={className} style={{
       ...(grid
         ? { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }
         : { display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }),
@@ -100,21 +100,12 @@ function Notice({ children, dir }) {
   );
 }
 
-function Answer({ content, streaming }) {
-  const html = renderMarkdown(content) + '';
-  return (
-    <div dir="auto" style={{
-      alignSelf: 'stretch', background: 'var(--bg-card)', border: '1px solid var(--border)',
-      padding: '12px 15px', borderRadius: '16px 16px 16px 4px', fontSize: 13.5,
-    }}>
-      <div className="md" dangerouslySetInnerHTML={{ __html: streaming ? html.replace(/(<\/[a-z0-9]+>\s*)$/i, '<span class="caret"></span>$1') : html }} />
-    </div>
-  );
-}
-
 export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
   const [input, setInput] = useState('');
+  const [revealing, setRevealing] = useState(null);
   const listRef = useRef(null);
+  const threadRef = useRef(null);
+  const stick = useRef(true);
   const fieldRef = useRef(null);
   const dir = lang === 'he' ? 'rtl' : 'ltr';
   const first = firstName(lang);
@@ -153,13 +144,28 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
     return undefined;
   }, [started]);
 
-  // Follow the answer as it is written, unless the visitor scrolled up to read.
+  // The answer is written out after it arrives, so it is still being written
+  // until the reveal says it is done, not just until the stream ends.
+  useEffect(() => { if (streamingId) setRevealing(streamingId); }, [streamingId]);
+  const writing = pending || (!!revealing && messages.some((m) => m.id === revealing));
+
+  // A new question scrolls to the bottom.
   useEffect(() => {
     const el = listRef.current;
-    if (!el) return;
-    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 140;
-    if (nearBottom || !streamingId) el.scrollTop = el.scrollHeight;
+    if (el && (stick.current || !streamingId)) el.scrollTop = el.scrollHeight;
   }, [messages, pending, error]);
+
+  // Follow the answer as it is written, unless the visitor scrolled up to read.
+  useEffect(() => {
+    const list = listRef.current;
+    const thread = threadRef.current;
+    if (!list || !thread || typeof ResizeObserver === 'undefined') return undefined;
+    const onScroll = () => { stick.current = list.scrollHeight - list.scrollTop - list.clientHeight < 140; };
+    const grew = new ResizeObserver(() => { if (stick.current) list.scrollTop = list.scrollHeight; });
+    list.addEventListener('scroll', onScroll, { passive: true });
+    grew.observe(thread);
+    return () => { grew.disconnect(); list.removeEventListener('scroll', onScroll); };
+  }, [started]);
 
   function submit(text) {
     const body = (text ?? input).trim();
@@ -249,7 +255,7 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
         flex: 1, minHeight: 0, overflowY: 'auto',
         padding: stacked ? '4px 16px 8px' : '6px 30px 10px',
       }}>
-        <div style={{ width: 'min(720px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div ref={threadRef} style={{ width: 'min(720px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {messages.map((msg) => (msg.role === 'user' ? (
             <div key={msg.id} dir="auto" style={{
               alignSelf: 'flex-end', maxWidth: '85%', background: 'var(--primary)', color: 'var(--primary-ink)',
@@ -257,18 +263,11 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
               lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
             }}>{msg.content}</div>
           ) : (
-            <Answer key={msg.id} content={msg.content} streaming={msg.id === streamingId} />
+            <Answer key={msg.id} content={msg.content} streaming={msg.id === streamingId}
+              onRevealed={() => setRevealing((id) => (id === msg.id ? null : id))} />
           )))}
 
-          {waitingForFirstToken && (
-            <div className="fade-in" style={{ display: 'flex', alignItems: 'flex-end', gap: 10, padding: '2px 2px 6px' }}>
-              <Pet mode="working" size={58} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 9, paddingBottom: 8 }}>
-                <span className="typing-dot" /><span className="typing-dot" /><span className="typing-dot" />
-                <span dir={dir} style={{ fontSize: 12, color: 'var(--text-muted)' }}>{t.thinking}</span>
-              </div>
-            </div>
-          )}
+          {waitingForFirstToken && <Steps steps={t.steps(first)} dir={dir} />}
 
           {error && !pending && (
             <div className="fade-in" style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>
@@ -289,8 +288,8 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
             </div>
           )}
 
-          {!pending && !error && last && last.role === 'assistant' && followUps.length > 0 && (
-            <QuestionChips items={followUps} onPick={submit} disabled={offline} dir={dir} grid={stacked}
+          {!writing && !error && last && last.role === 'assistant' && followUps.length > 0 && (
+            <QuestionChips items={followUps} onPick={submit} disabled={offline} dir={dir} grid={stacked} className="fade-in"
               style={{ justifyContent: 'flex-start', marginTop: 2 }} />
           )}
         </div>
