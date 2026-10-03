@@ -61,14 +61,23 @@ export function Composer({ value, onChange, onSend, disabled, placeholder, dir, 
   );
 }
 
-function QuestionChips({ items, onPick, disabled, dir, style }) {
+/* On a phone the questions sit in one row you swipe through — wrapped, six
+   of them filled half the screen. */
+function QuestionChips({ items, onPick, disabled, dir, style, row, bleed = 0 }) {
   return (
-    <div dir={dir} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', ...style }}>
+    <div dir={dir} className={row ? 'chip-row' : undefined} style={{
+      display: 'flex', gap: 8,
+      ...(row
+        ? { flexWrap: 'nowrap', overflowX: 'auto', justifyContent: 'flex-start', marginInline: -bleed, paddingInline: bleed, paddingBlock: 2 }
+        : { flexWrap: 'wrap', justifyContent: 'center' }),
+      ...style,
+    }}>
       {items.map((text) => (
         <button key={text} type="button" onClick={() => onPick(text)} disabled={disabled}
           style={{
             background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-2)',
             borderRadius: 999, padding: '8px 15px', fontSize: 12.5, fontWeight: 600,
+            flexShrink: 0, whiteSpace: row ? 'nowrap' : undefined,
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.color = 'var(--text)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-2)'; }}
@@ -156,17 +165,17 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
         alignItems: 'center', justifyContent: 'center',
         padding: stacked ? '8px 18px 18px' : '0 34px 50px', overflowY: 'auto',
       }}>
-        <PetStage size={stacked ? 170 : 230} mode={pending ? 'working' : 'idle'} pulse={chat.pulse} busy={pending} />
+        <PetStage size={stacked ? 148 : 230} mode={pending ? 'working' : 'idle'} pulse={chat.pulse} busy={pending} />
         <div dir={dir} style={{
           fontSize: stacked ? 25 : 30, fontWeight: 800, letterSpacing: '-0.035em',
           textAlign: 'center', marginTop: 6,
         }}>{t.hello(first)}</div>
         <div dir={dir} style={{
           fontSize: 13.5, color: 'var(--text-2)', textAlign: 'center',
-          marginTop: 9, lineHeight: 1.65, maxWidth: 520,
-        }}>{t.helloSub(first, firstPerson)}</div>
+          marginTop: stacked ? 6 : 9, lineHeight: 1.65, maxWidth: 520,
+        }}>{stacked ? t.helloSubShort(firstPerson) : t.helloSub(first, firstPerson)}</div>
 
-        <div style={{ width: '100%', marginTop: 24 }}>
+        <div style={{ width: '100%', marginTop: stacked ? 20 : 24 }}>
           {offlineNote}
           <Composer value={input} onChange={setInput} onSend={() => submit()} fieldRef={fieldRef}
             disabled={pending || offline} dir={dir}
@@ -174,7 +183,8 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
         </div>
 
         <QuestionChips items={chips} onPick={submit} disabled={pending || offline} dir={dir}
-          style={{ marginTop: 18, width: 'min(760px, 100%)' }} />
+          row={stacked} bleed={stacked ? 18 : 0}
+          style={{ marginTop: stacked ? 14 : 18, width: stacked ? 'calc(100% + 36px)' : 'min(760px, 100%)' }} />
 
         {!stacked && (
           <div dir={dir} style={{ marginTop: 26, fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center' }}>{t.foot(first)}</div>
@@ -263,6 +273,7 @@ export function HomeChat({ t, lang, chat, status, stacked, seed, onSeedUsed }) {
 
           {!pending && !error && last && last.role === 'assistant' && followUps.length > 0 && (
             <QuestionChips items={followUps} onPick={submit} disabled={offline} dir={dir}
+              row={stacked} bleed={stacked ? 16 : 0}
               style={{ justifyContent: 'flex-start', marginTop: 2 }} />
           )}
         </div>
